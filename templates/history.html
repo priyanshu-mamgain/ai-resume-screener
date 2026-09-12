@@ -70,7 +70,9 @@
     <a href="/" class="cabinet-link">← Back to screening</a>
 
     <div style="margin-top: 24px;">
-      {% if results %}
+      {% if db_error %}
+      <div class="empty-msg">Couldn't reach the filing cabinet right now — please try again shortly.</div>
+      {% elif results %}
       <div class="folder-entries">
         {% for r in results %}
           {% if r.score >= 70 %}

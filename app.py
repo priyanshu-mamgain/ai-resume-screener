@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import uuid
 from flask import Flask, request, jsonify, render_template, session
 import pdfplumber
+from pymongo.errors import PyMongoError
 from matcher import calculate_match_score, get_missing_keywords
 from database import save_result, get_all_results
 
@@ -69,7 +70,12 @@ def screen_resume():
     score = calculate_match_score(resume_text, job_description)
     missing = get_missing_keywords(resume_text, job_description)
 
-    save_result(resume_text, job_description, score, session["user_id"])
+    # Saving to the database is treated as best-effort: if MongoDB has a
+    # hiccup, the user still gets their score instead of a broken page.
+    try:
+        save_result(resume_text, job_description, score, session["user_id"])
+    except PyMongoError:
+        pass
 
     return jsonify({
         "score": score,
@@ -78,8 +84,14 @@ def screen_resume():
 
 @app.route('/history')
 def history():
-    results = get_all_results(session["user_id"])
-    return render_template('history.html', results=results)
+    try:
+        results = get_all_results(session["user_id"])
+        db_error = False
+    except PyMongoError:
+        results = []
+        db_error = True
+
+    return render_template('history.html', results=results, db_error=db_error)
 
 if __name__ == '__main__':
     app.run(debug=True)

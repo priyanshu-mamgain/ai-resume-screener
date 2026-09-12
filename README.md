@@ -74,8 +74,13 @@ I initially built this with `sentence-transformers` for semantic similarity, sin
 └── requirements.txt
 ```
 
+## Known limitations
+
+History is tied to an anonymous browser session (via a cookie), not a real account — clearing cookies, using incognito, or switching devices means losing access to past screenings. A full fix would mean adding user authentication.
+
 ## Possible improvements
 
-- Swap TF-IDF for semantic embeddings (sentence-transformers) given a more flexible deployment environment
-- Section-aware parsing (weight "Skills" and "Experience" sections higher than education/contact info)
-- Support for `.docx` resumes, not just PDF
+Swap TF-IDF for semantic embeddings (sentence-transformers) given a more flexible deployment environment
+Section-aware parsing (weight "Skills" and "Experience" sections higher than education/contact info)
+Support for .docx resumes, not just PDF
+Real user accounts, so history persists across devices
