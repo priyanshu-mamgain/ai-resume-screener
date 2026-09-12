@@ -2,12 +2,24 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from flask import Flask, request, jsonify, render_template
+import uuid
+from flask import Flask, request, jsonify, render_template, session
 import pdfplumber
 from matcher import calculate_match_score, get_missing_keywords
 from database import save_result, get_all_results
 
 app = Flask(__name__)
+
+# Secret key is required for Flask sessions to work securely.
+# In production (Render), set SECRET_KEY as an environment variable.
+app.secret_key = os.environ.get("SECRET_KEY", "dev-fallback-key-change-this")
+
+@app.before_request
+def assign_user_id():
+    """Give every visitor a unique, anonymous ID stored in their browser session,
+    so each person only ever sees their own screening history."""
+    if "user_id" not in session:
+        session["user_id"] = str(uuid.uuid4())
 
 def extract_text_from_pdf(file):
     """Extract text from an uploaded PDF file object"""
@@ -57,7 +69,7 @@ def screen_resume():
     score = calculate_match_score(resume_text, job_description)
     missing = get_missing_keywords(resume_text, job_description)
 
-    save_result(resume_text, job_description, score)
+    save_result(resume_text, job_description, score, session["user_id"])
 
     return jsonify({
         "score": score,
@@ -66,7 +78,7 @@ def screen_resume():
 
 @app.route('/history')
 def history():
-    results = get_all_results()
+    results = get_all_results(session["user_id"])
     return render_template('history.html', results=results)
 
 if __name__ == '__main__':
