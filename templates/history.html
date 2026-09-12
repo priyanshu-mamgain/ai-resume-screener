@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Filing Cabinet — Screening History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+  .folder-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .entry {
+    background: #FFFDF8;
+    border: 1px solid var(--paper-line);
+    border-left: 4px solid var(--paper-line);
+    border-radius: 3px;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .entry.strong { border-left-color: var(--gold); }
+  .entry.fair { border-left-color: var(--amber-mid); }
+  .entry.weak { border-left-color: var(--rust); }
+  .entry-info { flex: 1; min-width: 0; }
+  .entry-date {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+  .entry-preview {
+    font-size: 13.5px;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .entry-score {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 20px;
+    white-space: nowrap;
+  }
+  .entry-score.strong { color: var(--gold-dark); }
+  .entry-score.fair { color: var(--amber-mid); }
+  .entry-score.weak { color: var(--rust); }
+  .empty-msg {
+    text-align: center;
+    color: var(--ink-soft);
+    padding: 50px 20px;
+    font-size: 14.5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="desk">
+  <div class="folder">
+    <header class="folder-header">
+      <div>
+        <h1>Filing Cabinet</h1>
+        <p class="tagline">Every case reviewed so far, most recent first.</p>
+      </div>
+    </header>
+
+    <a href="/" class="cabinet-link">← Back to screening</a>
+
+    <div style="margin-top: 24px;">
+      {% if results %}
+      <div class="folder-entries">
+        {% for r in results %}
+          {% if r.score >= 70 %}
+            {% set tier = 'strong' %}
+          {% elif r.score >= 40 %}
+            {% set tier = 'fair' %}
+          {% else %}
+            {% set tier = 'weak' %}
+          {% endif %}
+        <div class="entry {{ tier }}">
+          <div class="entry-info">
+            <div class="entry-date">{{ r.timestamp.strftime('%d %b %Y, %I:%M %p') if r.timestamp else 'Undated' }}</div>
+            <div class="entry-preview">{{ r.resume_text[:70] }}...</div>
+          </div>
+          <div class="entry-score {{ tier }}">{{ r.score }}%</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-msg">No cases filed yet. Go screen a resume first.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

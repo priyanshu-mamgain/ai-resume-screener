@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Resume Screening — Case File</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="desk">
+  <div class="folder">
+
+    <header class="folder-header">
+      <div>
+        <h1>Resume Screening</h1>
+        <p class="tagline">See how closely a resume matches a role, on paper.</p>
+      </div>
+      <div class="file-tag" id="fileTag">FILE NO. 0000</div>
+    </header>
+
+    <a href="/history" class="cabinet-link">Open the filing cabinet →</a>
+
+    <div class="papers">
+      <div class="paper paper-resume">
+        <div class="paper-label">Resume</div>
+        <div class="upload-box" id="dropZone">
+          <input type="file" id="resumeFile" accept=".pdf" hidden>
+          <p id="fileLabel">Drop a PDF here, or click to choose one</p>
+        </div>
+        <div class="or-divider">or paste it in</div>
+        <textarea id="resumeText" placeholder="Paste resume text..."></textarea>
+      </div>
+
+      <div class="paper paper-jd">
+        <div class="paper-label">Job Description</div>
+        <textarea id="jd" placeholder="Paste the job description..."></textarea>
+      </div>
+    </div>
+
+    <button id="checkBtn" onclick="screenResume()">
+      <span id="btnText">Stamp It</span>
+      <span id="btnLoader" class="loader" style="display:none;"></span>
+    </button>
+
+    <div id="result" class="result-area">
+      <div class="stamp" id="stamp">
+        <div class="stamp-score" id="scoreValue">0%</div>
+        <div class="stamp-verdict" id="verdictText">MATCH</div>
+      </div>
+      <div class="notes" id="notesArea">
+        <p class="notes-label">Terms in the role, missing from the resume:</p>
+        <div class="tags" id="keywordsValue"></div>
+      </div>
+    </div>
+
+    <div id="errorBox" class="error-box" style="display:none;"></div>
+
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
